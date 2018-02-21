@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 
 class Notification extends React.Component {
   render() {
@@ -8,7 +9,7 @@ class Notification extends React.Component {
       borderWidth: 1
     }
 
-    const notifications = this.props.store.getState().notifications
+    const notifications = this.props.notifications
     const notification = [...notifications].pop()
 
     return (
@@ -19,4 +20,12 @@ class Notification extends React.Component {
   }
 }
 
-export default Notification
+const mapStateToProps = (state) => {
+  return {
+    notifications: state.notifications
+  }
+}
+
+export default connect(
+  mapStateToProps
+)(Notification)
