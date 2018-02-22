@@ -3,10 +3,14 @@ import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { setNotification, removeNotification } from '../reducers/notificationReducer'
 import Filter from './Filter'
 import { connect } from 'react-redux'
+import anecdoteService from '../services/anecdotes'
 
 class AnecdoteList extends React.Component {
 
-  voteForAnecdote = (anecdote) => () => {
+  voteForAnecdote = (anecdote)  => async () => {
+    console.log(anecdote)
+    const updated = { ...anecdote, votes: anecdote.votes + 1 }
+    await anecdoteService.update(anecdote.id, updated)
     this.props.voteAnecdote(anecdote.id)
     this.props.setNotification(`you voted '${anecdote.content}'`)
     setTimeout(() => {
@@ -14,35 +18,16 @@ class AnecdoteList extends React.Component {
     }, 5000)
   }
 
-  filterList = () => {
-    const filter = this.props.filter
-    const anecdotes = this.props.anecdotes
-
-    if (filter === '') {
-      return anecdotes
-    }
-
-    let filteredAnecdotes = []
-    for (let i = 0; i < anecdotes.length; i++) {
-      if (anecdotes[i].content.toLowerCase().includes(filter.toLowerCase())) {
-        filteredAnecdotes.push(anecdotes[i])
-      }
-    }
-
-    return filteredAnecdotes
-  }
-
   render() {
-    const anecdotes = this.filterList()
 
     return (
       <div>
         <h2>Anecdotes</h2>
         <div>
-          <Filter store = {this.props.store}/>
+          <Filter />
         </div>
-        {anecdotes.sort((a, b) => b.votes - a.votes).map(anecdote =>
-          <div key={anecdote.id}>
+        {this.props.anecdotesToShow.map(anecdote =>
+          <div key = {anecdote.id}>
             <div>
               {anecdote.content}
             </div>
@@ -59,10 +44,24 @@ class AnecdoteList extends React.Component {
   }
 }
 
+const filteredAnecdotes = (anecdotes, filter) => {
+  if (filter === '') {
+    return anecdotes.sort((a, b) => b.votes - a.votes)
+  }
+
+  let filteredAnecdotes = []
+  for (let i = 0; i < anecdotes.length; i++) {
+    if (anecdotes[i].content.toLowerCase().includes(filter.toLowerCase())) {
+      filteredAnecdotes.push(anecdotes[i])
+    }
+  }
+
+  return filteredAnecdotes.sort((a, b) => b.votes - a.votes)
+}
+
 const mapStateToProps = (state) => {
   return {
-    filter: state.filter,
-    anecdotes: state.anecdotes
+    anecdotesToShow: filteredAnecdotes(state.anecdotes, state.filter)
   }
 }
 
