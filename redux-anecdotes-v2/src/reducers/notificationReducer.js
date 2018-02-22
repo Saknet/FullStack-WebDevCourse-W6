@@ -26,18 +26,18 @@ const notificationReducer = (state = initialState, action) => {
 
 const generateId = () => Number((Math.random() * 100000).toFixed(0))
 
-export const setNotification = (notification) => {
-  return {
-    type: 'SET_NOTIFICATION',
-    notification,
-    id: generateId()
+export const notify = (notification, time) => {
+  return async (dispatch) => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      notification,
+      id: generateId()
+    })
+    setTimeout(() => {
+      dispatch({
+        type: 'REMOVE_NOTIFICATION'
+      })
+    }, time * 1000)
   }
 }
-
-export const removeNotification = () => {
-  return {
-    type: 'REMOVE_NOTIFICATION'
-  }
-}
-
 export default notificationReducer
