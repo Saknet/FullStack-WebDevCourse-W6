@@ -1,12 +1,20 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import { Container, Table, Message, Menu, Form, Button } from 'semantic-ui-react'
+import Image from './KenSchwaber.jpg'
 
-const Menu = () => (
-  <div style = {menuStyle}>    
-    <NavLink exact to = "/" activeStyle = {activeStyle} >anecdotes</NavLink>&nbsp;
-    <NavLink exact to = "/create" activeStyle = {activeStyle}>create new</NavLink>&nbsp;
-    <NavLink exact to = "/about" activeStyle = {activeStyle}>about</NavLink>&nbsp;
-  </div>
+const NavBar = () => (
+  <Menu inverted>
+    <Menu.Item link>   
+      <NavLink exact to = "/" activeStyle = {activeStyle} >anecdotes</NavLink>&nbsp;
+    </Menu.Item>
+    <Menu.Item link>
+      <NavLink exact to = "/create" activeStyle = {activeStyle}>create new</NavLink>&nbsp;
+    </Menu.Item>
+    <Menu.Item link>
+      <NavLink exact to = "/about" activeStyle = {activeStyle}>about</NavLink>&nbsp;
+    </Menu.Item>
+</Menu>
 )
 
 const activeStyle = {
@@ -29,34 +37,57 @@ const menuStyle = {
 const Anecdote = ({ anecdote }) => {
   return (
     <div>
-      <h1>{anecdote.content} {anecdote.author}</h1>
-      <p>has {anecdote.votes} votes</p>
-      <p>for more info see {anecdote.info}</p>
+      <div className = "ui sizer vertical segment">
+        <div className = "ui large header">{anecdote.content} {anecdote.author}</div>
+      </div>
+      <div className = "ui inverted segment">
+        <div className = "item">
+          <div className = "content">has {anecdote.votes} votes</div>
+        </div>
+        <div className = "item">
+          <div className = "content">for more info see {anecdote.info}</div>
+        </div>
+      </div>
     </div>
 )}
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
-    <h2>Anecdotes</h2>
-    <ul>
-      {anecdotes.map(anecdote => <li key = {anecdote.id}>
-        <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-      </li>)}
-    </ul>  
+    <div className = "ui sizer vertical segment">
+      <div className = "ui large header">Anecdotes</div>
+    </div>
+    <Table striped celled>
+      <Table.Body>
+        {anecdotes.map(anecdote => 
+        <Table.Row key = {anecdote.id}>
+          <Table.Cell>
+          <Link to = {`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+          </Table.Cell>
+        </Table.Row>)}
+      </Table.Body>
+    </Table> 
   </div>
 )
 
 const About = () => (
-  <div>
-    <h2>About anecdote app</h2>
-    <p>According to Wikipedia:</p>
-    
-    <em>An anecdote is a brief, revealing account of an individual person or an incident. 
-      Occasionally humorous, anecdotes differ from jokes because their primary purpose is not simply to provoke laughter but to reveal a truth more general than the brief tale itself, 
-      such as to characterize a person by delineating a specific quirk or trait, to communicate an abstract idea about a person, place, or thing through the concrete details of a short narrative. 
-      An anecdote is "a story with a point."</em>
+  <div className = "ui page grid">
+    <div className = "eight wide column">
+      <div className = "ui sizer vertical segment">
+        <div className = "ui large header">About anecdote app</div>
+      </div>
 
-    <p>Software engineering is full of excellent anecdotes, at this app you can find the best and add more.</p>
+      <p>According to Wikipedia:</p>
+    
+      <em>An anecdote is a brief, revealing account of an individual person or an incident. 
+        Occasionally humorous, anecdotes differ from jokes because their primary purpose is not simply to provoke laughter but to reveal a truth more general than the brief tale itself, 
+        such as to characterize a person by delineating a specific quirk or trait, to communicate an abstract idea about a person, place, or thing through the concrete details of a short narrative. 
+        An anecdote is "a story with a point."</em>
+
+      <p>Software engineering is full of excellent anecdotes, at this app you can find the best and add more.</p>
+    </div>
+    <div className = "eight wide column">
+      <img src = {Image} className = "KenSchwaber" alt = "KenSchwaber"/>
+    </div>
   </div>
 )
 
@@ -82,9 +113,9 @@ const notificationStyle = {
 const Notification = ({ message }) => {
   if (message !== '') {
     return (
-      <div style = {notificationStyle}>
+      <Message success>
         {message}
-      </div>
+      </Message>
     )
   } else {
     return (
@@ -124,21 +155,21 @@ class CreateNew extends React.Component {
     return(
       <div>
         <h2>create a new anecdote</h2>
-        <form onSubmit={this.handleSubmit}>
-          <div>
+        <Form onSubmit = {this.handleSubmit}>
+          <Form.Field>
             content 
             <input name='content' value={this.state.content} onChange={this.handleChange} />
-          </div>
-          <div>
+          </Form.Field>
+          <Form.Field>
             author
             <input name='author' value={this.state.author} onChange={this.handleChange} />
-          </div>
-          <div>
+          </Form.Field>
+          <Form.Field>
             url for more info
             <input name='info' value={this.state.info} onChange={this.handleChange} />
-          </div> 
-          <button>create</button>
-        </form>
+          </Form.Field> 
+          <Button>create</Button>
+        </Form>
       </div>  
     )
 
@@ -199,17 +230,20 @@ class App extends React.Component {
 
   render() {
     return (
+      <Container>
       <div>
         <Router>
           <div>
-            <h1>Software anecdotes</h1>
-            <Menu />
+          <div className = "ui sizer vertical segment">
+              <div className = "ui large header">Software anecdotes</div>
+            </div>
+            <NavBar />
             
             <Notification message = {this.state.notification}/>
 
-            <Route exact path="/" render = {() => <AnecdoteList anecdotes={this.state.anecdotes} /> }/>
-            <Route exact path="/create" render = {() => <CreateNew addNew={this.addNew} /> }  />
-            <Route exact path="/about" render = {() => <About />} />
+            <Route exact path = "/" render = {() => <AnecdoteList anecdotes = {this.state.anecdotes} /> }/>
+            <Route exact path = "/create" render = {() => <CreateNew addNew = {this.addNew} /> }  />
+            <Route exact path = "/about" render = {() => <About />} />
 
             <Route exact path = "/anecdotes/:id" render = {({match}) =>
               <Anecdote anecdote = {this.anecdoteById(match.params.id)} />} 
@@ -217,7 +251,7 @@ class App extends React.Component {
 
             <Route path = "/create" render = {() =>
               this.state.notification !== ''
-                ? <Redirect to="/" />
+                ? <Redirect to = "/" />
                 : ""
               }/>
 
@@ -225,6 +259,7 @@ class App extends React.Component {
         </Router>
         <Footer />
       </div>
+      </Container>
     );
   }
 }
