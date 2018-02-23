@@ -1,13 +1,30 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
 
 const Menu = () => (
-  <div>    
-    <Link to="/">anecdotes</Link>&nbsp;
-    <Link to="/create">create new</Link>&nbsp;
-    <Link to="/about">about</Link>&nbsp;
+  <div style = {menuStyle}>    
+    <NavLink exact to = "/" activeStyle = {activeStyle} >anecdotes</NavLink>&nbsp;
+    <NavLink exact to = "/create" activeStyle = {activeStyle}>create new</NavLink>&nbsp;
+    <NavLink exact to = "/about" activeStyle = {activeStyle}>about</NavLink>&nbsp;
   </div>
 )
+
+const activeStyle = {
+  fontWeight: 'bold',
+  backgroundColor: 'grey',
+  color: 'black'
+ }
+
+const menuStyle = {
+  color: 'green',
+  fontWeight: 'bold',
+  backgroundColor: 'lightblue',
+  border: '1px solid green',
+  borderRadius: '2px',
+  margin: '15px',
+  padding: '15px',
+  fontSize: 20
+}
 
 const Anecdote = ({ anecdote }) => {
   return (
@@ -51,12 +68,31 @@ const Footer = () => (
   </div>
 )
 
+const notificationStyle = {
+  color: 'green',
+  fontWeight: 'bold',
+  fontStyle: 'italic',
+  border: '1px solid green',
+  borderRadius: '8px',
+  margin: '15px',
+  padding: '15px',
+  fontSize: 20
+}
+
 const Notification = ({ message }) => {
-  return (
-    <div>
-      {message}
-    </div>
-  )
+  if (message !== '') {
+    return (
+      <div style = {notificationStyle}>
+        {message}
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        {message}
+      </div>
+    )   
+  }
 }
 
 class CreateNew extends React.Component {
@@ -168,6 +204,7 @@ class App extends React.Component {
           <div>
             <h1>Software anecdotes</h1>
             <Menu />
+            
             <Notification message = {this.state.notification}/>
 
             <Route exact path="/" render = {() => <AnecdoteList anecdotes={this.state.anecdotes} /> }/>

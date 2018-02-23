@@ -40,4 +40,5 @@ export const notify = (notification, time) => {
     }, time * 1000)
   }
 }
+
 export default notificationReducer
